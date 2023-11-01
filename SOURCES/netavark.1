@@ -1,0 +1,51 @@
+.nh
+.TH netavark(1)
+.SH NAME
+.PP
+netavark - Configure a given network namespace for use by a container
+
+.SH SYNOPSIS
+.PP
+\fBnetavark\fP [\fIoptions\fP] \fIcommand\fP \fInetwork namespace path\fP
+
+.SH DESCRIPTION
+.PP
+Netavark configures a network namespace according to a configuration read from STDIN. The configuration is JSON formatted.
+
+.SH GLOBAL OPTIONS
+.SS \fB--file\fP, \fB-f\fP
+.PP
+Instead of reading from STDIN, read the configuration to be applied from the given file. \fB-f -\fP may also be used to flag reading from STDIN.
+
+.SH COMMANDS
+.SS netavark setup
+.PP
+The setup command configures the given network namespace with the given configuration, creating any interfaces and firewall rules necessary.
+
+.SS netavark teardown
+.PP
+The teardown command is the inverse of the setup command, undoing any configuration applied. Some interfaces may not be deleted (bridge interfaces, for example, will not be removed).
+
+.SS CONFIGURATION FORMAT
+.PP
+The configuration accepted is the same for both setup and teardown. It is JSON formatted.
+
+.PP
+Format is https://github.com/containers/podman/blob/cd7b48198c38c5028540e85dc72dd3406f4318f0/libpod/network/types/network.go#L164-L173 but we will also send a Networks array including all the network definitions (https://github.com/containers/podman/blob/cd7b48198c38c5028540e85dc72dd3406f4318f0/libpod/network/types/network.go#L32-L62)
+TODO: Transcribe configuration into here in a nice tabular format
+
+.SH EXAMPLE
+.PP
+netavark setup /run/user/1000/podman/netns/d11d1f9c499d
+
+.PP
+netavark -f /run/podman/828b0508ae64.conf teardown /run/podman/netns/828b0508ae64
+
+.SH SEE ALSO
+.PP
+podman(1)
+
+.SH HISTORY
+.PP
+September 2021, Originally compiled by Matt Heon mheon@redhat.com
+\[la]mailto:mheon@redhat.com\[ra]
