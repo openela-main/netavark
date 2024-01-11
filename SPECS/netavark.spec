@@ -1,14 +1,10 @@
 # debuginfo doesn't work yet
 %global debug_package %{nil}
 
-#%%global branch v1.5.0-rhel
-%global commit0 8a6d81c51b2a130a3c93d94587df81053e208e05
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-
 Epoch: 2
 Name: netavark
-Version: 1.5.1
-Release: 2%{?dist}
+Version: 1.7.0
+Release: 1%{?dist}
 License: ASL 2.0 and BSD and MIT
 ExclusiveArch: %{rust_arches}
 # this is needed for go-md2man
@@ -17,11 +13,7 @@ ExclusiveArch: %{go_arches}
 ExcludeArch: i686
 Summary: OCI network stack
 URL: https://github.com/containers/%{name}
-%if 0%{?branch:1}
-Source0: https://github.com/containers/%{name}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar.gz
-%else
-Source0: https://github.com/containers/%{name}/archive/%{commit0}/%{name}-%{version}-%{shortcommit0}.tar.gz
-%endif
+Source0: %{url}/archive/v%{version}/%{version}.tar.gz
 Source1: %{url}/releases/download/v%{version}/%{name}-v%{version}-vendor.tar.gz
 BuildRequires: cargo
 BuildRequires: /usr/bin/go-md2man
@@ -55,11 +47,7 @@ Its features include:
 * Support for container DNS resolution via aardvark-dns.
 
 %prep
-%if 0%{?branch:1}
-%autosetup -Sgit -n containers-%{name}-%{shortcommit0}
-%else
-%autosetup -Sgit -n %{name}-%{commit0}
-%endif
+%autosetup -Sgit
 tar fx %{SOURCE1}
 mkdir -p .cargo
 
@@ -91,21 +79,21 @@ go-md2man -in %{name}.1.md -out %{name}.1
 %license LICENSE
 %dir %{_libexecdir}/podman
 %{_libexecdir}/podman/%{name}
+/usr/lib/systemd/system/*
 %{_mandir}/man1/%{name}.1*
 
 %changelog
-* Wed Jun 07 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.5.1-2
-- update to 1.5.1 bugfix release
-- Resolves: #2211542
+* Mon Jul 03 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.7.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.7.0
+- Related: #2176063
 
-* Wed Jun 07 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.5.0-4
-- update to the latest content of https://github.com/containers/netavark/tree/v1.5.0-rhel
-  (https://github.com/containers/netavark/commit/8a6d81c)
-- Resolves: #2211542
+* Mon Jun 12 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.6.0-2
+- rebuild
+- Resolves: #2188340
 
-* Thu Apr 20 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.5.0-3
-- fix --dns-add command is not functioning
-- Resolves: #2182898
+* Wed Apr 12 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.6.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.6.0
+- Related: #2176063
 
 * Fri Feb 03 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.5.0-2
 - fix build - thank to Paul Holzinger
