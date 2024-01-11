@@ -1,23 +1,15 @@
 # debuginfo doesn't work yet
 %global debug_package %{nil}
 
-#%%global branch v1.5.0-rhel
-%global commit0 8a6d81c51b2a130a3c93d94587df81053e208e05
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-
 Epoch: 2
 Name: netavark
-Version: 1.5.1
-Release: 2%{?dist}
+Version: 1.7.0
+Release: 1%{?dist}
 License: ASL 2.0 and BSD and MIT
 ExclusiveArch: %{rust_arches}
 Summary: OCI network stack
 URL: https://github.com/containers/%{name}
-%if 0%{?branch:1}
-Source0: https://github.com/containers/%{name}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar.gz
-%else
-Source0: https://github.com/containers/%{name}/archive/%{commit0}/%{name}-%{version}-%{shortcommit0}.tar.gz
-%endif
+Source0: %{url}/archive/v%{version}/%{version}.tar.gz
 Source1: %{url}/releases/download/v%{version}/%{name}-v%{version}-vendor.tar.gz
 Source2: netavark.1
 BuildRequires: cargo
@@ -53,11 +45,7 @@ Its features include:
 * Support for container DNS resolution via aardvark-dns.
 
 %prep
-%if 0%{?branch:1}
-%autosetup -Sgit -n containers-%{name}-%{shortcommit0}
-%else
-%autosetup -Sgit -n %{name}-%{commit0}
-%endif
+%autosetup -Sgit
 tar fx %{SOURCE1}
 mkdir -p .cargo
 
@@ -89,12 +77,17 @@ cp %{SOURCE2} .
 %license LICENSE
 %dir %{_libexecdir}/podman
 %{_libexecdir}/podman/%{name}
+/usr/lib/systemd/system/*
 %{_mandir}/man1/%{name}.1*
 
 %changelog
-* Wed Jun 07 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.5.1-2
-- update to 1.5.1 bugfix release
-- Resolves: #2211989
+* Mon Jul 03 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.7.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.7.0
+- Related: #2176055
+
+* Mon May 22 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.6.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.6.0
+- Related: #2176055
 
 * Thu Apr 20 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.5.0-5
 - fix --dns-add command is not functioning
