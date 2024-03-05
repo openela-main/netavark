@@ -1,10 +1,14 @@
 # debuginfo doesn't work yet
 %global debug_package %{nil}
 
+%global branch v1.7.0-rhel
+%global commit0 4335c93224d9667f62e9ba382d9eae314a19c706
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+
 Epoch: 2
 Name: netavark
 Version: 1.7.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: ASL 2.0 and BSD and MIT
 ExclusiveArch: %{rust_arches}
 # this is needed for go-md2man
@@ -13,7 +17,11 @@ ExclusiveArch: %{go_arches}
 ExcludeArch: i686
 Summary: OCI network stack
 URL: https://github.com/containers/%{name}
-Source0: %{url}/archive/v%{version}/%{version}.tar.gz
+%if 0%{?branch:1}
+Source0: https://github.com/containers/%{name}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar.gz
+%else
+Source0: https://github.com/containers/%{name}/archive/%{commit0}/%{name}-%{version}-%{shortcommit0}.tar.gz
+%endif
 Source1: %{url}/releases/download/v%{version}/%{name}-v%{version}-vendor.tar.gz
 BuildRequires: cargo
 BuildRequires: /usr/bin/go-md2man
@@ -47,7 +55,11 @@ Its features include:
 * Support for container DNS resolution via aardvark-dns.
 
 %prep
-%autosetup -Sgit
+%if 0%{?branch:1}
+%autosetup -Sgit -n containers-%{name}-%{shortcommit0}
+%else
+%autosetup -Sgit -n %{name}-%{commit0}
+%endif
 tar fx %{SOURCE1}
 mkdir -p .cargo
 
@@ -83,6 +95,11 @@ go-md2man -in %{name}.1.md -out %{name}.1
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Wed Nov 15 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.7.0-2
+- update to the latest content of https://github.com/containers/netavark/tree/v1.7.0-rhel
+  (https://github.com/containers/netavark/commit/4335c93)
+- Resolves: RHEL-16300
+
 * Mon Jul 03 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.7.0-1
 - update to https://github.com/containers/netavark/releases/tag/v1.7.0
 - Related: #2176063
