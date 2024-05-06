@@ -1,14 +1,10 @@
 # debuginfo doesn't work yet
 %global debug_package %{nil}
 
-%global branch v1.7.0-rhel
-%global commit0 4335c93224d9667f62e9ba382d9eae314a19c706
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-
 Epoch: 2
 Name: netavark
-Version: 1.7.0
-Release: 2%{?dist}
+Version: 1.10.3
+Release: 1%{?dist}
 License: ASL 2.0 and BSD and MIT
 ExclusiveArch: %{rust_arches}
 # this is needed for go-md2man
@@ -17,11 +13,7 @@ ExclusiveArch: %{go_arches}
 ExcludeArch: i686
 Summary: OCI network stack
 URL: https://github.com/containers/%{name}
-%if 0%{?branch:1}
-Source0: https://github.com/containers/%{name}/tarball/%{commit0}/%{branch}-%{shortcommit0}.tar.gz
-%else
-Source0: https://github.com/containers/%{name}/archive/%{commit0}/%{name}-%{version}-%{shortcommit0}.tar.gz
-%endif
+Source0: %{url}/archive/v%{version}/%{version}.tar.gz
 Source1: %{url}/releases/download/v%{version}/%{name}-v%{version}-vendor.tar.gz
 BuildRequires: cargo
 BuildRequires: /usr/bin/go-md2man
@@ -29,6 +21,7 @@ Recommends: aardvark-dns >= 1.0.3
 Provides: container-network-stack = 2
 BuildRequires: make
 BuildRequires: rust-srpm-macros
+BuildRequires: systemd-rpm-macros
 BuildRequires: git-core
 BuildRequires: protobuf-compiler
 BuildRequires: protobuf-c
@@ -55,15 +48,16 @@ Its features include:
 * Support for container DNS resolution via aardvark-dns.
 
 %prep
-%if 0%{?branch:1}
-%autosetup -Sgit -n containers-%{name}-%{shortcommit0}
-%else
-%autosetup -Sgit -n %{name}-%{commit0}
-%endif
+%autosetup -Sgit
 tar fx %{SOURCE1}
 mkdir -p .cargo
 
 cat >.cargo/config << EOF
+[source."git+https://github.com/namib-project/nftables-rs.git?rev=1b0c60b"]
+git = "https://github.com/namib-project/nftables-rs.git"
+rev = "1b0c60b"
+replace-with = "vendored-sources"
+
 [source.crates-io]
 replace-with = "vendored-sources"
 
@@ -91,14 +85,45 @@ go-md2man -in %{name}.1.md -out %{name}.1
 %license LICENSE
 %dir %{_libexecdir}/podman
 %{_libexecdir}/podman/%{name}
-/usr/lib/systemd/system/*
+%{_unitdir}/*
 %{_mandir}/man1/%{name}.1*
 
 %changelog
-* Wed Nov 15 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.7.0-2
-- update to the latest content of https://github.com/containers/netavark/tree/v1.7.0-rhel
-  (https://github.com/containers/netavark/commit/4335c93)
-- Resolves: RHEL-16300
+* Mon Feb 12 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.10.3-1
+- update to https://github.com/containers/netavark/releases/tag/v1.10.3
+- Related: RHEL-2112
+
+* Thu Feb 01 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.10.2-1
+- update to https://github.com/containers/netavark/releases/tag/v1.10.2
+- Related: RHEL-2112
+
+* Thu Jan 25 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.10.1-1
+- update to https://github.com/containers/netavark/releases/tag/v1.10.1
+- Related: RHEL-2112
+
+* Thu Jan 25 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.10.0-2
+- Fix build of 1.10.0 - thanks to Lokesh Mandvekar
+- Related: Jira:RHEL-2112
+
+* Wed Jan 24 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.10.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.10.0
+- Related: RHEL-2112
+
+* Tue Dec 05 2023 Lokesh Mandvekar <lsm5@redhat.com> - 2:1.9.0-1
+- require systemd srpm macros
+- Related: Jira:RHEL-16291
+
+* Fri Oct 06 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.8.0-3
+- require systemd srpm macros
+- Related: Jira:RHEL-2112
+
+* Mon Oct 02 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.8.0-2
+- fix directory for systemd units
+- Related: Jira:RHEL-2112
+
+* Fri Sep 29 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.8.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.8.0
+- Related: Jira:RHEL-2112
 
 * Mon Jul 03 2023 Jindrich Novy <jnovy@redhat.com> - 2:1.7.0-1
 - update to https://github.com/containers/netavark/releases/tag/v1.7.0
