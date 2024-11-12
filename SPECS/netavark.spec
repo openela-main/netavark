@@ -3,7 +3,7 @@
 
 Epoch: 2
 Name: netavark
-Version: 1.10.3
+Version: 1.12.2
 Release: 1%{?dist}
 License: ASL 2.0 and BSD and MIT
 ExclusiveArch: %{rust_arches}
@@ -89,6 +89,18 @@ go-md2man -in %{name}.1.md -out %{name}.1
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Tue Aug 20 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.12.2-1
+- update to https://github.com/containers/netavark/releases/tag/v1.12.2
+- Related: RHEL-27608
+
+* Mon Aug 05 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.12.1-1
+- update to https://github.com/containers/netavark/releases/tag/v1.12.1
+- Related: RHEL-27608
+
+* Mon Jun 03 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.11.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.11.0
+- Related: RHEL-27608
+
 * Mon Feb 12 2024 Jindrich Novy <jnovy@redhat.com> - 2:1.10.3-1
 - update to https://github.com/containers/netavark/releases/tag/v1.10.3
 - Related: RHEL-2112
