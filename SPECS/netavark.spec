@@ -30,7 +30,7 @@ Epoch: 102
 %else
 Epoch: 2
 %endif
-Version: 1.14.0
+Version: 1.14.1
 Release: 1%{?dist}
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-3-Clause AND MIT
@@ -139,6 +139,10 @@ cd docs
 %{_unitdir}/%{name}-firewalld-reload.service
 
 %changelog
+* Wed Mar 26 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.14.1-1
+- update to https://github.com/containers/netavark/releases/tag/v1.14.1
+- Resolves: RHEL-80267
+
 * Mon Feb 10 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.14.0-1
 - update to https://github.com/containers/netavark/releases/tag/v1.14.0
 - Related: RHEL-60277
