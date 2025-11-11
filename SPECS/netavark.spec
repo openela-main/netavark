@@ -30,7 +30,7 @@ Epoch: 102
 %else
 Epoch: 2
 %endif
-Version: 1.14.1
+Version: 1.16.0
 Release: 1%{?dist}
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-3-Clause AND MIT
@@ -82,8 +82,7 @@ Its features include:
     including MACVLAN networks
 * All required firewall configuration to perform NAT and port
     forwarding as required for containers
-* Support for iptables and firewalld at present, with support
-    for nftables planned in a future release
+* Support for iptables, firewalld and nftables
 * Support for rootless containers
 * Support for IPv4 and IPv6
 * Support for container DNS resolution via aardvark-dns.
@@ -139,9 +138,25 @@ cd docs
 %{_unitdir}/%{name}-firewalld-reload.service
 
 %changelog
-* Wed Mar 26 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.14.1-1
+* Fri Aug 15 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.16.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.16.0
+- Related: RHEL-80816
+
+* Tue Jun 10 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.15.2-1
+- update to https://github.com/containers/netavark/releases/tag/v1.15.2
+- Related: RHEL-80816
+
+* Mon Jun 02 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.15.1-1
+- update to https://github.com/containers/netavark/releases/tag/v1.15.1
+- Related: RHEL-80816
+
+* Wed May 14 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.15.0-1
+- update to https://github.com/containers/netavark/releases/tag/v1.15.0
+- Related: RHEL-80816
+
+* Thu Mar 20 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.14.1-1
 - update to https://github.com/containers/netavark/releases/tag/v1.14.1
-- Resolves: RHEL-80267
+- Related: RHEL-80816
 
 * Mon Feb 10 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.14.0-1
 - update to https://github.com/containers/netavark/releases/tag/v1.14.0
