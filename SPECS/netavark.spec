@@ -30,7 +30,7 @@ Epoch: 102
 %else
 Epoch: 2
 %endif
-Version: 1.16.0
+Version: 1.17.2
 Release: 1%{?dist}
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-3-Clause AND MIT
@@ -118,10 +118,12 @@ cd docs
 %preun
 %systemd_preun %{name}-dhcp-proxy.service
 %systemd_preun %{name}-firewalld-reload.service
+%systemd_preun %{name}-nftables-reload.service
 
 %postun
 %systemd_postun %{name}-dhcp-proxy.service
 %systemd_postun %{name}-firewalld-reload.service
+%systemd_postun %{name}-nftables-reload.service
 
 %files
 %license LICENSE
@@ -136,8 +138,21 @@ cd docs
 %{_unitdir}/%{name}-dhcp-proxy.service
 %{_unitdir}/%{name}-dhcp-proxy.socket
 %{_unitdir}/%{name}-firewalld-reload.service
+%{_unitdir}/%{name}-nftables-reload.service
 
 %changelog
+* Thu Feb 05 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.17.2-1
+- update to https://github.com/containers/netavark/releases/tag/v1.17.2
+- Related: RHEL-122178
+
+* Tue Feb 03 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.17.1-1
+- update to https://github.com/containers/netavark/releases/tag/v1.17.1
+- Related: RHEL-122178
+
+* Fri Aug 22 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.16.1-1
+- update to https://github.com/containers/netavark/releases/tag/v1.16.1
+- Related: RHEL-80817
+
 * Fri Aug 15 2025 Jindrich Novy <jnovy@redhat.com> - 2:1.16.0-1
 - update to https://github.com/containers/netavark/releases/tag/v1.16.0
 - Related: RHEL-80817
