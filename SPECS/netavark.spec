@@ -28,10 +28,10 @@ Name: netavark
 %if %{defined copr_username}
 Epoch: 102
 %else
-Epoch: 2
+Epoch: 3
 %endif
 Version: 1.17.2
-Release: 1%{?dist}
+Release: 3%{?dist}
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-3-Clause AND MIT
 %if %{defined golang_arches_future}
@@ -103,6 +103,7 @@ tar fx %{SOURCE1}
 
 %build
 NETAVARK_DEFAULT_FW=%{default_fw} %{__make} CARGO="%{__cargo}" build
+
 %if (0%{?fedora} || 0%{?rhel} >= 10) && !%{defined copr_username}
 %cargo_license_summary
 %{cargo_license} > LICENSE.dependencies
@@ -141,6 +142,15 @@ cd docs
 %{_unitdir}/%{name}-nftables-reload.service
 
 %changelog
+* Wed Jul 22 2026 Jindrich Novy <jnovy@redhat.com> - 3:1.17.2-3
+- rollback to 1.17.2 increasing Epoch to 3
+- Resolves: RHEL-187025
+
+* Tue Jun 23 2026 Jindrich Novy <jnovy@redhat.com> - 2:2.0.0-1
+- update to the latest upstream release
+- add -tests subpackage
+- Resolves: RHEL-187025
+
 * Thu Feb 05 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.17.2-1
 - update to https://github.com/containers/netavark/releases/tag/v1.17.2
 - Related: RHEL-111919
