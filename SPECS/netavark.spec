@@ -28,9 +28,9 @@ Name: netavark
 %if %{defined copr_username}
 Epoch: 102
 %else
-Epoch: 2
+Epoch: 4
 %endif
-Version: 1.17.2
+Version: 2.1.0
 Release: 1%{?dist}
 # The `AND` needs to be uppercase in the License for SPDX compatibility
 License: Apache-2.0 AND BSD-3-Clause AND MIT
@@ -55,7 +55,6 @@ Requires: nftables
 Requires: iptables
 %endif
 BuildRequires: make
-BuildRequires: protobuf-c
 BuildRequires: protobuf-compiler
 %if %{defined rhel}
 # rust-toolset requires the `local` repo enabled on non-koji ELN build environments
@@ -82,10 +81,31 @@ Its features include:
     including MACVLAN networks
 * All required firewall configuration to perform NAT and port
     forwarding as required for containers
-* Support for iptables, firewalld and nftables
+* Support for firewalld and nftables
 * Support for rootless containers
 * Support for IPv4 and IPv6
 * Support for container DNS resolution via aardvark-dns.
+
+# Only intended to be used for gating tests
+# End user usecases not supported
+%package tests
+Summary: Tests for %{name}
+Requires: %{name} = %{epoch}:%{version}-%{release}
+Recommends: bats
+Requires: bind-utils
+Requires: dbus-daemon
+Requires: dnsmasq
+Requires: firewalld
+Requires: jq
+Requires: net-tools
+Requires: nftables
+Requires: nmap-ncat
+
+%description tests
+%{summary}
+
+This package contains integration tests for %{name}. Only intended to be used for
+gating tests. Not supported for end users / customers.
 
 %prep
 %autosetup -Sgit %{name}-%{version}
@@ -109,11 +129,24 @@ NETAVARK_DEFAULT_FW=%{default_fw} %{__make} CARGO="%{__cargo}" build
 %cargo_vendor_manifest
 %endif
 
+# Build examples package for tests
+%{__make} CARGO="%{__cargo}" examples
+
 cd docs
 %{__make}
 
 %install
 %{__make} DESTDIR=%{buildroot} PREFIX=%{_prefix} install
+
+%{__install} -d -p %{buildroot}%{_datadir}/%{name}/{examples,test,test-dhcp}
+%{__cp} -rpav targets/release/examples/* %{buildroot}%{_datadir}/%{name}/examples
+%{__cp} -rpav test/* %{buildroot}%{_datadir}/%{name}/test
+%{__cp} -rpav test-dhcp/* %{buildroot}%{_datadir}/%{name}/test-dhcp
+%{__install} -D -m0755 bin/netavark-connection-tester %{buildroot}%{_bindir}/netavark-connection-tester
+%{__install} -D -m0755 bin/netavark-dhcp-proxy-client %{buildroot}%{_libexecdir}/podman/netavark-dhcp-proxy-client
+
+%{__rm} -rf %{buildroot}%{_datadir}/%{name}/test/tmt
+%{__rm} -rf %{buildroot}%{_datadir}/%{name}/test-dhcp/tmt
 
 %preun
 %systemd_preun %{name}-dhcp-proxy.service
@@ -140,7 +173,34 @@ cd docs
 %{_unitdir}/%{name}-firewalld-reload.service
 %{_unitdir}/%{name}-nftables-reload.service
 
+%files tests
+%{_bindir}/netavark-connection-tester
+%{_libexecdir}/podman/netavark-dhcp-proxy-client
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/examples
+%dir %{_datadir}/%{name}/test
+%dir %{_datadir}/%{name}/test-dhcp
+%{_datadir}/%{name}/examples/*
+%{_datadir}/%{name}/test/*
+%{_datadir}/%{name}/test-dhcp/*
+
 %changelog
+* Thu Aug 13 2026 Jindrich Novy <jnovy@redhat.com> - 4:2.1.0-1
+- update to https://github.com/containers/netavark/releases/tag/v2.1.0
+- Resolves: RHEL-187024
+
+* Wed Jul 22 2026 Jindrich Novy <jnovy@redhat.com> - 4:2.0.0-2
+- increase Epoch to preserve upgrade path from RHEL9 - Resolves: RHEL-213577
+
+* Tue Jun 23 2026 Jindrich Novy <jnovy@redhat.com> - 2:2.0.0-1
+- update to the latest upstream release
+- add -tests subpackage
+- Resolves: RHEL-187024
+
+* Fri May 29 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.17.2-2
+- Add TMT test infrastructure for tier0 gating
+- Resolves: RHEL-180350
+
 * Thu Feb 05 2026 Jindrich Novy <jnovy@redhat.com> - 2:1.17.2-1
 - update to https://github.com/containers/netavark/releases/tag/v1.17.2
 - Related: RHEL-122178
